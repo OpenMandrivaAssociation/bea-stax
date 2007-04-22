@@ -44,6 +44,7 @@ Source0:        http://dist.codehaus.org/stax/distributions/stax-src-1.2.0.zip
 Patch0:         %{name}-ecj-bootclasspath.patch
 #Vendor:         JPackage Project
 #Distribution:   JPackage
+BuildRequires:  ant
 %if %{gcj_support}
 BuildRequires:  java-gcj-compat-devel
 Requires(post): java-gcj-compat
