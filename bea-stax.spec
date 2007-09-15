@@ -34,7 +34,7 @@
 
 Name:           bea-stax
 Version:        1.2.0
-Release:        %mkrel 1.2
+Release:        %mkrel 1.3
 Epoch:          0
 Summary:        Streaming API for XML
 License:        Apache License
@@ -47,8 +47,6 @@ Patch0:         %{name}-ecj-bootclasspath.patch
 BuildRequires:  ant
 %if %{gcj_support}
 BuildRequires:  java-gcj-compat-devel
-Requires(post): java-gcj-compat
-Requires(postun): java-gcj-compat
 %else
 BuildArch:      noarch
 BuildRequires:  java-devel >= 0:1.4.2
