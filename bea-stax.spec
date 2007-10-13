@@ -42,8 +42,6 @@ Group:          Development/Java
 URL:            http://dev2dev.bea.com/technologies/stax/index.jsp
 Source0:        http://dist.codehaus.org/stax/distributions/stax-src-1.2.0.zip
 Patch0:         %{name}-ecj-bootclasspath.patch
-#Vendor:         JPackage Project
-#Distribution:   JPackage
 BuildRequires:  ant
 %if %{gcj_support}
 BuildRequires:  java-gcj-compat-devel
@@ -92,6 +90,7 @@ Group:          Development/Java
 %prep
 %setup -q -c
 %patch0 -p0
+%{__perl} -pi -e 's/source="1\.2" target="1\.2"/source="1.3" target="1.3"/g' build.xml
 %{__perl} -pi -e 's/<javac/<javac nowarn="true"/g' build.xml
 
 %build
