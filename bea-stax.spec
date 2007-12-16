@@ -34,7 +34,7 @@
 
 Name:           bea-stax
 Version:        1.2.0
-Release:        %mkrel 1.3.0
+Release:        %mkrel 1.3.1
 Epoch:          0
 Summary:        Streaming API for XML
 License:        Apache License
@@ -49,7 +49,7 @@ BuildRequires:  java-gcj-compat-devel
 BuildArch:      noarch
 BuildRequires:  java-devel >= 0:1.4.2
 %endif
-BuildRequires:  jpackage-utils >= 0:1.6
+BuildRequires:  java-rpmbuild >= 0:1.6
 Requires:       jpackage-utils >= 0:1.6
 Requires:       %{name}-api = %{epoch}:%{version}-%{release}
 
