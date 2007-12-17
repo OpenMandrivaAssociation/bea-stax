@@ -53,7 +53,6 @@ BuildRequires:  java-rpmbuild >= 0:1.6
 Requires:       jpackage-utils >= 0:1.6
 Requires:       %{name}-api = %{epoch}:%{version}-%{release}
 
-BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-buildroot
 
 %description
 The Streaming API for XML (StAX) is a groundbreaking 
