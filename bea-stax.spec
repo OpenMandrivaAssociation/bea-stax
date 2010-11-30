@@ -34,7 +34,7 @@
 
 Name:           bea-stax
 Version:        1.2.0
-Release:        %mkrel 1.3.4
+Release:        %mkrel 1.3.5
 Epoch:          0
 Summary:        Streaming API for XML
 License:        Apache License
