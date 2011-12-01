@@ -99,36 +99,36 @@ export CLASSPATH=`pwd`/build/stax-api-1.0.1.jar
 %{ant} all javadoc
 
 %install
-rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}
 
 # jar
-install -d -m 0755 $RPM_BUILD_ROOT%{_javadir}
-install -p -m 0644 build/stax-api-%{api_version}.jar $RPM_BUILD_ROOT%{_javadir}/%{name}-api-%{version}.jar
-install -p -m 0644 build/stax-%{version}-dev.jar $RPM_BUILD_ROOT%{_javadir}/%{name}-ri-%{version}.jar
-ln -s %{name}-api-%{version}.jar $RPM_BUILD_ROOT%{_javadir}/%{name}-api.jar
-ln -s %{name}-ri-%{version}.jar $RPM_BUILD_ROOT%{_javadir}/%{name}-ri.jar
+install -d -m 0755 %{buildroot}%{_javadir}
+install -p -m 0644 build/stax-api-%{api_version}.jar %{buildroot}%{_javadir}/%{name}-api-%{version}.jar
+install -p -m 0644 build/stax-%{version}-dev.jar %{buildroot}%{_javadir}/%{name}-ri-%{version}.jar
+ln -s %{name}-api-%{version}.jar %{buildroot}%{_javadir}/%{name}-api.jar
+ln -s %{name}-ri-%{version}.jar %{buildroot}%{_javadir}/%{name}-ri.jar
 
 # javadoc
-install -d -m 755 $RPM_BUILD_ROOT%{_javadocdir}/%{name}-%{version}
-cp -pr build/javadoc/* $RPM_BUILD_ROOT%{_javadocdir}/%{name}-%{version}
-ln -s %{name}-%{version} $RPM_BUILD_ROOT%{_javadocdir}/%{name} # ghost symlink
+install -d -m 755 %{buildroot}%{_javadocdir}/%{name}-%{version}
+cp -pr build/javadoc/* %{buildroot}%{_javadocdir}/%{name}-%{version}
+ln -s %{name}-%{version} %{buildroot}%{_javadocdir}/%{name} # ghost symlink
 
 # demo
-#install -d -m 755 $RPM_BUILD_ROOT%{_datadir}/%{name}-%{version}
-#cp -pr examples/* $RPM_BUILD_ROOT%{_datadir}/%{name}-%{version}
+#install -d -m 755 %{buildroot}%{_datadir}/%{name}-%{version}
+#cp -pr examples/* %{buildroot}%{_datadir}/%{name}-%{version}
 
 # manual
-#install -d -m 755 $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}
-#cp docs/license/BEA*.doc $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}
-#cp README.txt $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}
-#cp jsr173_1.0.pdf $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}
+#install -d -m 755 %{buildroot}%{_docdir}/%{name}-%{version}
+#cp docs/license/BEA*.doc %{buildroot}%{_docdir}/%{name}-%{version}
+#cp README.txt %{buildroot}%{_docdir}/%{name}-%{version}
+#cp jsr173_1.0.pdf %{buildroot}%{_docdir}/%{name}-%{version}
 
 %if %{gcj_support}
 %{_bindir}/aot-compile-rpm
 %endif
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root,-)
