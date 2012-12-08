@@ -34,7 +34,7 @@
 
 Name:           bea-stax
 Version:        1.2.0
-Release:        %mkrel 1.3.6
+Release:        1.3.9
 Epoch:          0
 Summary:        Streaming API for XML
 License:        Apache License
@@ -53,8 +53,6 @@ BuildRequires:  java-rpmbuild >= 0:1.6
 Requires:       jpackage-utils >= 0:1.6
 Requires:       %{name}-api = %{epoch}:%{version}-%{release}
 
-BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-buildroot
-
 %description
 The Streaming API for XML (StAX) is a groundbreaking 
 new Java API for parsing and writing XML easily and 
@@ -63,6 +61,7 @@ efficiently.
 %package api
 Summary:        The StAX API
 Group:          Development/Java
+
 %description api
 %{summary}
 
@@ -72,20 +71,6 @@ Group:          Development/Java
 
 %description javadoc
 %{summary}
-
-#%package manual
-#Summary:        Documents for %{name}
-#Group:          Development/Java
-
-#%description manual
-#%{summary}
-
-#%package demo
-#Summary:        Examples for %{name}
-#Group:          Development/Java
-
-#%description demo
-#%{summary}
 
 %prep
 %setup -q -c
@@ -99,51 +84,33 @@ export CLASSPATH=`pwd`/build/stax-api-1.0.1.jar
 %{ant} all javadoc
 
 %install
-rm -rf %{buildroot}
-
 # jar
-install -d -m 0755 %{buildroot}%{_javadir}
-install -p -m 0644 build/stax-api-%{api_version}.jar %{buildroot}%{_javadir}/%{name}-api-%{version}.jar
-install -p -m 0644 build/stax-%{version}-dev.jar %{buildroot}%{_javadir}/%{name}-ri-%{version}.jar
-ln -s %{name}-api-%{version}.jar %{buildroot}%{_javadir}/%{name}-api.jar
-ln -s %{name}-ri-%{version}.jar %{buildroot}%{_javadir}/%{name}-ri.jar
+install -d -m 0755 $RPM_BUILD_ROOT%{_javadir}
+install -p -m 0644 build/stax-api-%{api_version}.jar $RPM_BUILD_ROOT%{_javadir}/%{name}-api-%{version}.jar
+install -p -m 0644 build/stax-%{version}-dev.jar $RPM_BUILD_ROOT%{_javadir}/%{name}-ri-%{version}.jar
+ln -s %{name}-api-%{version}.jar $RPM_BUILD_ROOT%{_javadir}/%{name}-api.jar
+ln -s %{name}-ri-%{version}.jar $RPM_BUILD_ROOT%{_javadir}/%{name}-ri.jar
 
 # javadoc
-install -d -m 755 %{buildroot}%{_javadocdir}/%{name}-%{version}
-cp -pr build/javadoc/* %{buildroot}%{_javadocdir}/%{name}-%{version}
-ln -s %{name}-%{version} %{buildroot}%{_javadocdir}/%{name} # ghost symlink
-
-# demo
-#install -d -m 755 %{buildroot}%{_datadir}/%{name}-%{version}
-#cp -pr examples/* %{buildroot}%{_datadir}/%{name}-%{version}
-
-# manual
-#install -d -m 755 %{buildroot}%{_docdir}/%{name}-%{version}
-#cp docs/license/BEA*.doc %{buildroot}%{_docdir}/%{name}-%{version}
-#cp README.txt %{buildroot}%{_docdir}/%{name}-%{version}
-#cp jsr173_1.0.pdf %{buildroot}%{_docdir}/%{name}-%{version}
+install -d -m 755 $RPM_BUILD_ROOT%{_javadocdir}/%{name}-%{version}
+cp -pr build/javadoc/* $RPM_BUILD_ROOT%{_javadocdir}/%{name}-%{version}
+ln -s %{name}-%{version} $RPM_BUILD_ROOT%{_javadocdir}/%{name} # ghost symlink
 
 %if %{gcj_support}
 %{_bindir}/aot-compile-rpm
 %endif
 
-%clean
-rm -rf %{buildroot}
-
 %files
-%defattr(-,root,root,-)
 #%{_docdir}/%{name}-%{version}/BEA*.doc
 #%{_docdir}/%{name}-%{version}/README.txt
 #%{_datadir}/%{name}-%{version}
 %{_javadir}/%{name}-ri-%{version}.jar
 %{_javadir}/%{name}-ri.jar
 %if %{gcj_support}
-%dir %{_libdir}/gcj/%{name}
-%attr(-,root,root) %{_libdir}/gcj/%{name}/*
+%{_libdir}/gcj/%{name}
 %endif
 
 %files api
-%defattr(-,root,root,-)
 %{_javadir}/%{name}-api-%{version}.jar
 %{_javadir}/%{name}-api.jar
 
@@ -152,10 +119,7 @@ rm -rf %{buildroot}
 %{_javadocdir}/%{name}-%{version}
 %doc %{_javadocdir}/%{name}
 
-#%files manual
-#%defattr(0644,root,root,0755)
-#%{_docdir}/%{name}-%{version}/jsr173_1.0.pdf
-
-#%files demo
-#%defattr(0644,root,root,0755)
-#%{_datadir}/%{name}-%{version}
+%changelog
+* Tue May 03 2011 Oden Eriksson <oeriksson@mandriva.com> 0:1.2.0-1.3.6mdv2011.0
++ Revision: 663318
+- mass rebuild
