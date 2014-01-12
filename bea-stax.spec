@@ -1,3 +1,4 @@
+%{?_javapackages_macros:%_javapackages_macros}
 # Copyright (c) 2000-2005, JPackage Project
 # All rights reserved.
 #
@@ -28,98 +29,165 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-%define gcj_support     1
-%define section         free
-%define api_version     1.0.1
+%global mainver 1.2.0
+%global apiver  1.0.1
 
-Name:           bea-stax
-Version:        1.2.0
-Release:        1.3.13
-Epoch:          0
 Summary:        Streaming API for XML
-License:        Apache License
-Group:          Development/Java
-URL:            http://dev2dev.bea.com/technologies/stax/index.jsp
+URL:            http://stax.codehaus.org/Home
 Source0:        http://dist.codehaus.org/stax/distributions/stax-src-1.2.0.zip
-Patch0:         %{name}-ecj-bootclasspath.patch
-BuildRequires:  ant
-%if %{gcj_support}
-BuildRequires:  java-gcj-compat-devel
-%else
+Source1:        http://dist.codehaus.org/stax/jars/stax-1.2.0.pom
+Source2:        http://dist.codehaus.org/stax/jars/stax-api-1.0.1.pom
+Name:           bea-stax
+Version:        %{mainver}
+Release:        8.1%{?dist}
+License:        ASL 1.1 and ASL 2.0
+
 BuildArch:      noarch
-BuildRequires:  java-devel >= 0:1.4.2
-%endif
-BuildRequires:  java-rpmbuild >= 0:1.6
-Requires:       jpackage-utils >= 0:1.6
-Requires:       %{name}-api = %{epoch}:%{version}-%{release}
+
+BuildRequires:          jpackage-utils
+BuildRequires:          ant
+BuildRequires:          xerces-j2,xalan-j2
+BuildRequires:          java-devel
+Requires:               jpackage-utils
 
 %description
-The Streaming API for XML (StAX) is a groundbreaking 
-new Java API for parsing and writing XML easily and 
-efficiently. 
+The Streaming API for XML (StAX) is a groundbreaking
+new Java API for parsing and writing XML easily and
+efficiently.
 
 %package api
 Summary:        The StAX API
-Group:          Development/Java
+
+Requires:       jpackage-utils
 
 %description api
 %{summary}
 
 %package javadoc
 Summary:        Javadoc for %{name}
-Group:          Development/Java
+
+Requires:       jpackage-utils
 
 %description javadoc
 %{summary}
 
 %prep
-%setup -q -c
-%patch0 -p0
-%{__perl} -pi -e 's/source="1\.2" target="1\.2"/source="1.3" target="1.3"/g' build.xml
-%{__perl} -pi -e 's/<javac/<javac nowarn="true"/g' build.xml
+%setup -q -c -n %{name}-%{version}
+
+# Convert CR+LF to LF
+%{__sed} -i 's/\r//' ASF2.0.txt
 
 %build
-export OPT_JAR_LIST=:
-export CLASSPATH=`pwd`/build/stax-api-1.0.1.jar
-%{ant} all javadoc
+export CLASSPATH=`pwd`/build/stax-api-%{apiver}.jar
+ant all javadoc
 
 %install
 # jar
-install -d -m 0755 $RPM_BUILD_ROOT%{_javadir}
-install -p -m 0644 build/stax-api-%{api_version}.jar $RPM_BUILD_ROOT%{_javadir}/%{name}-api-%{version}.jar
-install -p -m 0644 build/stax-%{version}-dev.jar $RPM_BUILD_ROOT%{_javadir}/%{name}-ri-%{version}.jar
-ln -s %{name}-api-%{version}.jar $RPM_BUILD_ROOT%{_javadir}/%{name}-api.jar
-ln -s %{name}-ri-%{version}.jar $RPM_BUILD_ROOT%{_javadir}/%{name}-ri.jar
+install -Dpm 0644 build/stax-api-%{apiver}.jar %{buildroot}%{_javadir}/%{name}-api.jar
+install -Dpm 0644 build/stax-%{version}-dev.jar %{buildroot}%{_javadir}/%{name}.jar
+# the following symlink can be removed once no package needs "bea-stax-ri"
+ln -s %{name}.jar %{buildroot}%{_javadir}/%{name}-ri.jar
 
 # javadoc
-install -d -m 755 $RPM_BUILD_ROOT%{_javadocdir}/%{name}-%{version}
-cp -pr build/javadoc/* $RPM_BUILD_ROOT%{_javadocdir}/%{name}-%{version}
-ln -s %{name}-%{version} $RPM_BUILD_ROOT%{_javadocdir}/%{name} # ghost symlink
+install -d -m 755 %{buildroot}%{_javadocdir}/%{name}
+cp -pr build/javadoc/* %{buildroot}%{_javadocdir}/%{name}
 
-%if %{gcj_support}
-%{_bindir}/aot-compile-rpm
-%endif
+# pom
+install -Dpm 644 %{SOURCE1} %{buildroot}%{_mavenpomdir}/JPP-%{name}.pom
+install -Dpm 644 %{SOURCE2} %{buildroot}%{_mavenpomdir}/JPP-%{name}-api.pom
+
+%add_maven_depmap JPP-%{name}.pom %{name}.jar
+%add_maven_depmap -f api -a "javax.xml.stream:stax-api" JPP-%{name}-api.pom %{name}-api.jar
 
 %files
-#%{_docdir}/%{name}-%{version}/BEA*.doc
-#%{_docdir}/%{name}-%{version}/README.txt
-#%{_datadir}/%{name}-%{version}
-%{_javadir}/%{name}-ri-%{version}.jar
+%doc ASF2.0.txt
+%{_javadir}/%{name}.jar
 %{_javadir}/%{name}-ri.jar
-%if %{gcj_support}
-%{_libdir}/gcj/%{name}
-%endif
+%{_mavenpomdir}/JPP-%{name}.pom
+%{_mavendepmapfragdir}/%{name}
+
 
 %files api
-%{_javadir}/%{name}-api-%{version}.jar
+%doc ASF2.0.txt
 %{_javadir}/%{name}-api.jar
+%{_mavenpomdir}/JPP-%{name}-api.pom
+%{_mavendepmapfragdir}/%{name}-api
 
 %files javadoc
-%defattr(0644,root,root,0755)
-%{_javadocdir}/%{name}-%{version}
-%doc %{_javadocdir}/%{name}
+%doc ASF2.0.txt
+%doc %{_javadocdir}/*
 
 %changelog
-* Tue May 03 2011 Oden Eriksson <oeriksson@mandriva.com> 0:1.2.0-1.3.6mdv2011.0
-+ Revision: 663318
-- mass rebuild
+* Sat Aug 03 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.2.0-8
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_20_Mass_Rebuild
+
+* Wed Feb 13 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.2.0-7
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_19_Mass_Rebuild
+
+* Wed Nov 28 2012 Mikolaj Izdebski <mizdebsk@redhat.com> - 1.2.0-6
+- Remove unneeded patch
+
+* Wed Nov 14 2012 Jaromir Capik <jcapik@redhat.com> - 1.2.0-5
+- ASL 1.1 was missing
+
+* Wed Jul 18 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.2.0-4
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_18_Mass_Rebuild
+
+* Thu Jan 12 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.2.0-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_17_Mass_Rebuild
+
+* Thu Sep 29 2011 Jaromir Capik <jcapik@redhat.com> - 1.2.0-2
+- Symlink "-ri" created for backward compatibility
+
+* Thu Sep 29 2011 Jaromir Capik <jcapik@redhat.com> - 1.2.0-1
+- Update to 1.2.0
+- Introduction of POM files and depmaps
+
+* Mon Feb 07 2011 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0:1.2.0-0.8.rc1
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_15_Mass_Rebuild
+
+* Thu Oct 7 2010 Alexander Kurtakov <akurtako@redhat.com> 0:1.2.0-0.7.rc1
+- BR java 1.6.0.
+
+* Thu Oct 7 2010 Alexander Kurtakov <akurtako@redhat.com> 0:1.2.0-0.6.rc1
+- Drop gcj support.
+
+* Fri Jul 24 2009 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0:1.2.0-0.5.rc1
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_12_Mass_Rebuild
+
+* Mon Feb 23 2009 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0:1.2.0-0.4.rc1
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_11_Mass_Rebuild
+
+* Wed Jul  9 2008 Tom "spot" Callaway <tcallawa@redhat.com> - 0:1.2.0-0.3.rc1
+- drop repotag
+- fix license
+
+* Tue Feb 19 2008 Fedora Release Engineering <rel-eng@fedoraproject.org> - 0:1.2.0-0.2.rc1.2jpp.1
+- Autorebuild for GCC 4.3
+
+* Mon Feb 12 2007 Vivek Lakshmanan <vivekl@redhat.com> 0:1.2.0-0.1.rc1.2jpp.1.fc7
+- Use new naming convention
+- Add ASF2.0.txt as doc for api and main package
+- Remove post/postun magic for javadoc
+- Add BR on ant, xerces-j2 and xalan-j2
+- Add conditional patch to make the package build under ecj/gcj
+
+* Wed Jan 18 2006 Fernando Nasser <fnasser@redhat.com> 0:1.2.0-0.rc1.2jpp
+- First JPP 1.7 build
+
+* Wed Jan 18 2006 Deepak Bhole <dbhole@redhat.com> 0:1.2.0-0.rc1.1jpp
+- Change source zip, and build the ri jars
+- Use setup macro in prep
+- First version all under APL
+- New package name
+- Demo still not yet available under the APL; will be in an update
+
+* Tue Apr 26 2005 Fernando Nasser <fnasser@redhat.com> 0:1.0-2jpp_2rh
+- First Red Hat build
+
+* Wed Oct 20 2004 David Walluck <david@jpackage.org> 0:1.0-2jpp
+- fix build
+
+* Thu Sep 09 2004 Ralph Apel <r.apel at r-apel.de> 0:1.0-1jpp
+- First JPackage build 
+- Note: there is a stax project starting at codehaus
