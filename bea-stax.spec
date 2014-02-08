@@ -34,7 +34,7 @@
 
 Name:           bea-stax
 Version:        1.2.0
-Release:        1.3.9
+Release:        1.3.10
 Epoch:          0
 Summary:        Streaming API for XML
 License:        Apache License
