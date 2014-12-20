@@ -39,7 +39,8 @@ Source1:        http://dist.codehaus.org/stax/jars/stax-1.2.0.pom
 Source2:        http://dist.codehaus.org/stax/jars/stax-api-1.0.1.pom
 Name:           bea-stax
 Version:        %{mainver}
-Release:        8.1%{?dist}
+Release:        9.1
+Group:		Development/Java
 License:        ASL 1.1 and ASL 2.0
 
 BuildArch:      noarch
@@ -99,19 +100,12 @@ install -Dpm 644 %{SOURCE2} %{buildroot}%{_mavenpomdir}/JPP-%{name}-api.pom
 %add_maven_depmap JPP-%{name}.pom %{name}.jar
 %add_maven_depmap -f api -a "javax.xml.stream:stax-api" JPP-%{name}-api.pom %{name}-api.jar
 
-%files
+%files -f .mfiles
 %doc ASF2.0.txt
-%{_javadir}/%{name}.jar
 %{_javadir}/%{name}-ri.jar
-%{_mavenpomdir}/JPP-%{name}.pom
-%{_mavendepmapfragdir}/%{name}
 
-
-%files api
+%files api -f .mfiles-api
 %doc ASF2.0.txt
-%{_javadir}/%{name}-api.jar
-%{_mavenpomdir}/JPP-%{name}-api.pom
-%{_mavendepmapfragdir}/%{name}-api
 
 %files javadoc
 %doc ASF2.0.txt
