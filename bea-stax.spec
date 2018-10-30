@@ -39,7 +39,7 @@ Source1:        http://dist.codehaus.org/stax/jars/stax-1.2.0.pom
 Source2:        http://dist.codehaus.org/stax/jars/stax-api-1.0.1.pom
 Name:           bea-stax
 Version:        %{mainver}
-Release:        9.3
+Release:        9.4
 Group:		Development/Java
 License:        ASL 1.1 and ASL 2.0
 
